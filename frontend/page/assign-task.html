@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" /> <!-- UTF-8 để hiển thị đúng tiếng Việt -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Hiển thị đúng trên mobile -->
+    <title>Todo list - Task list</title> <!-- Tiêu đề tab trình duyệt -->
+    <link rel="stylesheet" href="/style/assign-task.css" /> <!-- Nạp file CSS của trang Task list -->
+</head>
+
+<body>
+    <header class="topbar"> <!-- Thanh trên cùng của ứng dụng -->
+        <h1 class="topbar-title">Todo list</h1> <!-- Tên ứng dụng -->
+        <div class="topbar-user"> <!-- Khu vực thông tin người đăng nhập -->
+            <span id="user-name" class="user-name"></span> <!-- Tên user đang đăng nhập (JS điền vào) -->
+            <button id="logout-button" class="button button-secondary" type="button">Logout</button>
+            <!-- Nút đăng xuất -->
+        </div>
+    </header>
+
+    <main class="container"> <!-- Vùng nội dung chính -->
+        <p id="message" class="message" role="status"></p> <!-- Thông báo chung của trang -->
+
+        <section class="panel"> <!-- KHU VỰC A: thêm task mới -->
+            <h2 class="panel-title">Add task</h2> <!-- Tiêu đề khu vực thêm task -->
+            <form id="add-task-form" class="add-form" novalidate> <!-- Form thêm task -->
+                <input id="task-input" class="input" type="text" maxlength="100"
+                    placeholder="Enter task content (max 100 characters)" />
+                <!-- Ô nhập nội dung task, tối đa 100 ký tự -->
+
+                <button id="add-task-button" class="button" type="submit">Add</button> <!-- Nút Add bên cạnh ô nhập -->
+            </form>
+            <p id="task-input-error" class="field-error"></p> <!-- Báo lỗi cho ô nhập task -->
+            <p id="add-task-message" class="message"></p> <!-- Thông báo kết quả thêm task -->
+        </section>
+
+        <section class="panel"> <!-- KHU VỰC B: danh sách task -->
+            <h2 class="panel-title">Task list</h2> <!-- Tiêu đề khu vực danh sách -->
+            <p id="task-list-message" class="message"></p> <!-- Thông báo khi tải danh sách task -->
+            <ul id="task-list" class="task-list"></ul> <!-- JS sẽ render từng task vào đây -->
+        </section>
+    </main>
+
+    <script src="/script/assign-task.js" defer></script> <!-- defer: chạy JS sau khi HTML đã tải xong -->
+</body>
+
+</html>

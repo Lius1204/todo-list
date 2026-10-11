@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" /> <!-- UTF-8 để hiển thị đúng tiếng Việt -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Hiển thị đúng trên mobile -->
+    <title>Todo list - Sign Up</title> <!-- Tiêu đề tab trình duyệt -->
+    <link rel="stylesheet" href="/style/signup.css" /> <!-- Nạp file CSS của trang SignUp -->
+</head>
+
+<body>
+    <main class="card"> <!-- Khung form được căn giữa màn hình -->
+        <h1 class="title">Todo list</h1> <!-- Tiêu đề đúng như mô tả trong đề -->
+        <p id="message" class="message" role="status"></p> <!-- Thông báo chung: lỗi hoặc trạng thái -->
+
+        <form id="signup-form" class="form" novalidate> <!-- novalidate: tự validate bằng JS -->
+            <label class="label" for="name">Display name</label> <!-- Nhãn ô tên hiển thị -->
+            <input id="name" name="name" class="input" type="text" placeholder="Alex"
+                autocomplete="name" /><!-- Ô nhập tên hiển thị -->
+
+            <p id="name-error" class="field-error"></p> <!-- Vùng báo lỗi riêng cho ô tên -->
+
+            <label class="label" for="email">Email</label> <!-- Nhãn cho ô email -->
+            <input id="email" name="email" class="input" type="email" placeholder="you@example.com"
+                autocomplete="email" /><!-- Ô nhập email -->
+
+            <p id="email-error" class="field-error"></p> <!-- Vùng báo lỗi riêng cho ô email -->
+
+            <label class="label" for="password">Password</label> <!-- Nhãn cho ô mật khẩu -->
+            <input id="password" name="password" class="input" type="password" placeholder="At least 8 characters"
+                autocomplete="new-password" /><!-- Ô nhập mật khẩu -->
+
+            <p id="password-error" class="field-error"></p> <!-- Vùng báo lỗi riêng cho ô mật khẩu -->
+
+            <button id="signup-button" class="button" type="submit">SignUp</button>
+            <!-- Nút chính CÓ khung, chữ "SignUp" -->
+        </form>
+
+        <a class="link" href="/page/login.html">Login</a> <!-- Link phụ KHÔNG khung, chữ "Login" -->
+    </main>
+    <script src="/script/signup.js" defer></script> <!-- defer: chạy JS sau khi HTML đã tải xong -->
+</body>
+
+</html>

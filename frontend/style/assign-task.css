@@ -1,0 +1,131 @@
+/* ===========================================================================
+   FILE    : frontend/style/assign-task.css
+   MỤC ĐÍCH: Trang trí trang Task list (thêm task, danh sách task, gán user).
+   =========================================================================== */
+
+* { box-sizing: border-box; }                      /* Tính padding/border vào kích thước phần tử */
+
+body {                                             /* Áp dụng cho toàn trang */
+  margin: 0;                                       /* Xoá margin mặc định */
+  background: #f2f4f7;                             /* Nền xám nhẹ */
+  font-family: Arial, Helvetica, sans-serif;       /* Font chữ cơ bản */
+  color: #1f2937;                                  /* Màu chữ chính */
+}
+
+.topbar {                                          /* Thanh trên cùng */
+  display: flex;                                   /* Dùng flexbox để xếp ngang */
+  align-items: center;                             /* Căn giữa theo chiều dọc */
+  justify-content: space-between;                  /* Đẩy 2 đầu về 2 phía */
+  padding: 14px 24px;                              /* Khoảng đệm trong thanh */
+  background: #ffffff;                             /* Nền trắng */
+  border-bottom: 1px solid #e5e7eb;                /* Đường kẻ phân cách phía dưới */
+}
+
+.topbar-title { margin: 0; font-size: 22px; }      /* Tiêu đề "Todo list" trên thanh */
+
+.topbar-user { display: flex; align-items: center; gap: 12px; }  /* Nhóm tên user + nút logout */
+
+.user-name { font-size: 14px; color: #4b5563; }    /* Tên user đang đăng nhập */
+
+.container {                                       /* Vùng nội dung chính */
+  max-width: 860px;                                /* Giới hạn bề rộng cho dễ đọc */
+  margin: 24px auto;                               /* Căn giữa theo chiều ngang */
+  padding: 0 16px;                                 /* Chừa lề 2 bên trên màn hình nhỏ */
+}
+
+.panel {                                           /* Mỗi khối nội dung (add task / task list) */
+  padding: 20px;                                   /* Khoảng đệm trong khối */
+  margin-bottom: 20px;                             /* Cách khối tiếp theo 20px */
+  background: #ffffff;                             /* Nền trắng */
+  border: 1px solid #e5e7eb;                       /* Viền xám nhạt */
+  border-radius: 12px;                             /* Bo góc khối */
+}
+
+.panel-title { margin: 0 0 14px; font-size: 18px; }  /* Tiêu đề của khối */
+
+.add-form { display: flex; gap: 10px; }            /* Form thêm task: ô nhập và nút nằm cạnh nhau */
+
+.input {                                           /* Ô nhập liệu dùng chung */
+  flex: 1;                                         /* Chiếm hết phần rộng còn lại */
+  padding: 10px 12px;                              /* Khoảng đệm trong ô */
+  font-size: 15px;                                 /* Cỡ chữ */
+  border: 1px solid #d1d5db;                       /* Viền xám nhạt */
+  border-radius: 8px;                              /* Bo góc */
+}
+
+.input:focus { outline: 2px solid #2563eb; outline-offset: 1px; }  /* Viền xanh khi đang gõ */
+
+.button {                                          /* Nút chính */
+  padding: 10px 18px;                              /* Khoảng đệm trong nút */
+  font-size: 15px;                                 /* Cỡ chữ */
+  font-weight: 600;                                /* Chữ đậm */
+  color: #ffffff;                                  /* Chữ trắng */
+  background: #2563eb;                             /* Nền xanh */
+  border: 1px solid #2563eb;                       /* Viền xanh */
+  border-radius: 8px;                              /* Bo góc */
+  cursor: pointer;                                 /* Con trỏ bàn tay */
+}
+
+.button:hover { background: #1d4ed8; }             /* Đổi màu khi rê chuột */
+.button:disabled { opacity: 0.6; cursor: not-allowed; }  /* Nút mờ khi đang xử lý */
+
+.button-secondary {                                /* Nút phụ (Logout) */
+  color: #374151;                                  /* Chữ xám đậm */
+  background: #ffffff;                             /* Nền trắng */
+  border: 1px solid #d1d5db;                       /* Viền xám nhạt */
+}
+
+.button-secondary:hover { background: #f3f4f6; }   /* Đổi nền nhẹ khi rê chuột */
+
+.message {                                         /* Thông báo chung */
+  min-height: 20px;                                /* Giữ chỗ tránh nhảy layout */
+  margin: 0 0 12px;                                /* Cách dưới 12px */
+  font-size: 14px;                                 /* Cỡ chữ */
+  color: #b91c1c;                                  /* Màu đỏ = lỗi */
+}
+
+.message.success { color: #15803d; }               /* Thông báo thành công màu xanh */
+
+.field-error {                                     /* Lỗi của ô nhập task */
+  min-height: 18px;                                /* Giữ chỗ tránh nhảy layout */
+  margin: 6px 0 0;                                 /* Cách ô nhập phía trên */
+  font-size: 13px;                                 /* Cỡ chữ nhỏ */
+  color: #b91c1c;                                  /* Màu đỏ */
+}
+
+.task-list { list-style: none; margin: 0; padding: 0; }  /* Danh sách task bỏ dấu chấm đầu dòng */
+
+.task-item {                                       /* Một dòng task */
+  display: flex;                                   /* Xếp các phần tử trong dòng theo hàng ngang */
+  align-items: center;                             /* Căn giữa theo chiều dọc */
+  gap: 10px;                                       /* Khoảng cách giữa các phần tử */
+  padding: 10px 0;                                 /* Khoảng đệm trên/dưới */
+  border-bottom: 1px solid #f3f4f6;                /* Đường kẻ phân cách giữa các task */
+}
+
+.task-content { flex: 1; font-size: 15px; word-break: break-word; }  /* Nội dung task chiếm phần rộng nhất */
+
+.task-content.completed { text-decoration: line-through; color: #9ca3af; }  /* Task đã xong: gạch ngang, mờ đi */
+
+.task-assignee { font-size: 13px; color: #4b5563; }  /* Tên user được giao việc, hiển thị trong ngoặc đơn */
+
+.task-actions { display: flex; align-items: center; gap: 6px; }  /* Nhóm nút Edit / Delete / Assign */
+
+.icon-button {                                     /* Nút nhỏ dạng biểu tượng */
+  padding: 6px 10px;                               /* Khoảng đệm nhỏ */
+  font-size: 13px;                                 /* Cỡ chữ nhỏ */
+  background: #ffffff;                             /* Nền trắng */
+  border: 1px solid #d1d5db;                       /* Viền xám nhạt */
+  border-radius: 6px;                              /* Bo góc nhỏ */
+  cursor: pointer;                                 /* Con trỏ bàn tay */
+}
+
+.icon-button:hover { background: #f3f4f6; }        /* Đổi nền khi rê chuột */
+
+.assign-select, .edit-input {                      /* Dropdown chọn user và ô sửa nội dung */
+  padding: 6px 8px;                                /* Khoảng đệm */
+  font-size: 14px;                                 /* Cỡ chữ */
+  border: 1px solid #d1d5db;                       /* Viền xám nhạt */
+  border-radius: 6px;                              /* Bo góc */
+  max-width: 180px;                                /* Không cho rộng quá */
+}

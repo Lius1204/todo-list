@@ -1,0 +1,19 @@
+# ===== Thư mục phụ thuộc: cài lại bằng "npm install", KHÔNG commit =====
+node_modules/
+
+# ===== File chứa bí mật: KHÔNG bao giờ commit =====
+.env
+
+# ===== Dữ liệu CSV: user thật + dữ liệu seed 1 triệu dòng (rất nặng) =====
+backend/db/*.csv
+backend/db/*.tmp
+backend/db/tmp/
+
+# ===== File log và file tạm =====
+*.log
+npm-debug.log*
+*.tmp
+
+# ===== File rác của hệ điều hành / editor =====
+.DS_Store
+Thumbs.db

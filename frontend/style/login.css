@@ -1,0 +1,106 @@
+/* ===========================================================================
+   FILE    : frontend/style/login.css
+   MỤC ĐÍCH: Trang trí trang Login - form căn giữa, đơn giản, dễ đọc.
+   =========================================================================== */
+
+* { box-sizing: border-box; }                      /* Tính cả padding/border vào kích thước phần tử */
+
+body {                                             /* Áp dụng cho toàn trang */
+  margin: 0;                                       /* Xoá margin mặc định của trình duyệt */
+  min-height: 100vh;                               /* Cao tối thiểu bằng chiều cao màn hình */
+  display: flex;                                   /* Dùng flexbox để căn giữa nội dung */
+  align-items: center;                             /* Căn giữa theo chiều dọc */
+  justify-content: center;                         /* Căn giữa theo chiều ngang */
+  background: #f2f4f7;                             /* Màu nền xám rất nhẹ */
+  font-family: Arial, Helvetica, sans-serif;       /* Font chữ cơ bản, dễ đọc */
+  color: #1f2937;                                  /* Màu chữ chính */
+}
+
+.card {                                            /* Khung chứa form */
+  width: 360px;                                    /* Bề rộng cố định của khung */
+  padding: 32px;                                   /* Khoảng cách từ viền vào nội dung */
+  background: #ffffff;                             /* Nền trắng */
+  border: 1px solid #e5e7eb;                       /* Viền mảnh màu xám */
+  border-radius: 12px;                             /* Bo tròn góc */
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);   /* Đổ bóng nhẹ tạo chiều sâu */
+  text-align: center;                              /* Căn giữa chữ trong khung */
+}
+
+.title { margin: 0 0 16px; font-size: 28px; }      /* Tiêu đề "Todo list" */
+
+.message {                                         /* Vùng thông báo chung */
+  min-height: 20px;                                /* Giữ chỗ để layout không nhảy khi có lỗi */
+  margin: 0 0 12px;                                /* Cách dưới 12px */
+  font-size: 14px;                                 /* Chữ nhỏ hơn tiêu đề */
+  color: #b91c1c;                                  /* Màu đỏ = thông báo lỗi */
+}
+
+.message.success { color: #15803d; }               /* Thông báo thành công thì đổi sang màu xanh */
+
+.form {                                            /* Form đăng nhập */
+  display: flex;                                   /* Dùng flexbox để xếp các ô theo hàng dọc */
+  flex-direction: column;                          /* Hướng xếp: từ trên xuống */
+  text-align: left;                                /* Nội dung form căn trái cho dễ đọc */
+}
+
+.label {                                           /* Nhãn của từng ô nhập */
+  margin-bottom: 6px;                              /* Cách ô nhập bên dưới 6px */
+  font-size: 14px;                                 /* Cỡ chữ nhãn */
+  font-weight: 600;                                /* In đậm vừa phải */
+}
+
+.input {                                           /* Ô nhập liệu */
+  padding: 10px 12px;                              /* Khoảng đệm trong ô */
+  font-size: 15px;                                 /* Cỡ chữ khi gõ */
+  border: 1px solid #d1d5db;                       /* Viền xám nhạt */
+  border-radius: 8px;                              /* Bo góc ô nhập */
+}
+
+.input:focus {                                     /* Khi đang gõ vào ô nhập */
+  outline: 2px solid #2563eb;                      /* Viền xanh nổi bật */
+  outline-offset: 1px;                             /* Khoảng cách viền nổi bật */
+}
+
+.field-error {                                     /* Thông báo lỗi dưới mỗi ô nhập */
+  min-height: 18px;                                /* Giữ chỗ tránh nhảy layout */
+  margin: 4px 0 8px;                               /* Khoảng cách trên/dưới */
+  font-size: 13px;                                 /* Chữ nhỏ */
+  color: #b91c1c;                                  /* Màu đỏ cảnh báo */
+}
+
+.button {                                          /* Nút chính: CÓ khung như trong hình vẽ */
+  margin-top: 8px;                                 /* Cách ô nhập phía trên 8px */
+  padding: 11px 16px;                              /* Khoảng đệm trong nút */
+  font-size: 15px;                                 /* Cỡ chữ trên nút */
+  font-weight: 600;                                /* Chữ đậm */
+  color: #ffffff;                                  /* Chữ trắng */
+  background: #2563eb;                             /* Nền xanh dương */
+  border: 1px solid #2563eb;                       /* Viền cùng màu nền */
+  border-radius: 8px;                              /* Bo góc nút */
+  cursor: pointer;                                 /* Đổi con trỏ thành bàn tay khi rê vào */
+}
+
+.button:hover { background: #1d4ed8; }             /* Đổi màu nền khi rê chuột vào nút */
+.button:disabled { opacity: 0.6; cursor: not-allowed; }  /* Nút mờ khi đang gửi request */
+
+.link {                                            /* Link phụ: KHÔNG có khung như trong hình vẽ */
+  display: inline-block;                           /* Cho phép đặt margin */
+  margin-top: 14px;                                /* Cách nút phía trên 14px */
+  font-size: 14px;                                 /* Cỡ chữ của link */
+  color: #2563eb;                                  /* Màu xanh giống nút */
+  text-decoration: none;                           /* Bỏ gạch chân mặc định */
+}
+
+.link:hover { text-decoration: underline; }        /* Rê chuột vào thì gạch chân */
+
+.link-button {                                     /* Nút nhưng hiển thị giống link */
+  margin-top: 12px;                                /* Cách phía trên 12px */
+  padding: 0;                                      /* Bỏ khoảng đệm để giống link */
+  font-size: 14px;                                 /* Cỡ chữ bằng link */
+  color: #2563eb;                                  /* Màu xanh */
+  background: none;                                /* Bỏ nền */
+  border: none;                                    /* Bỏ viền */
+  cursor: pointer;                                 /* Con trỏ dạng bàn tay */
+}
+
+.hidden { display: none; }                         /* Class dùng để ẩn phần tử bằng JS */

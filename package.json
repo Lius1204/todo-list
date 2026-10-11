@@ -1,0 +1,21 @@
+{
+    "name": "todo-list-website",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Todo List website - Node.js HTTP + CSV storage + JWT auth + Gmail SMTP verification",
+    "type": "module",
+    "main": "backend/src/server.js",
+    "scripts": {
+        "start": "node backend/src/server.js",
+        "dev": "node --watch backend/src/server.js"
+    },
+    "engines": {
+        "node": ">=20.12.0"
+    },
+    "dependencies": {
+        "csv-parse": "^7.0.3",
+        "csv-stringify": "^6.9.0",
+        "jsonwebtoken": "^9.0.3",
+        "nodemailer": "^10.1.0"
+    }
+}
