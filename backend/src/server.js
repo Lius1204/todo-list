@@ -3,22 +3,25 @@
  *  FILE    : backend/src/server.js
  *  MỤC ĐÍCH: HTTP server chính của ứng dụng Todo list.
  *            - Phục vụ file tĩnh (HTML, CSS, JS) trong thư mục frontend/
- *            - Điều phối request API dưới tiền tố /api
+ *            - Điều phối request API dưới tiền tố /api tới các file route
  *            - Khởi tạo file CSV dữ liệu khi server bắt đầu chạy
  *            - KHÔNG dùng Express hay framework backend nào (đúng yêu cầu đề)
  *  YÊU CẦU : Node.js >= 20.12 (dùng process.loadEnvFile + ES Module)
- *  CẬP NHẬT: Bước 2A thêm khởi tạo CSV, Bước 2B dùng chung responseUtils.
+ *  CẬP NHẬT: Bước 2A khởi tạo CSV, 2B dùng chung responseUtils,
+ *            Bước 3 thêm đọc JSON body + nhóm route xác thực.
  * ============================================================================
  */
 
 // ---------------------------------------------------------------------------
-// PHẦN 1: IMPORT MODULE CỦA NODE.JS VÀ UTILS DÙNG CHUNG CỦA DỰ ÁN
+// PHẦN 1: IMPORT MODULE CỦA NODE.JS VÀ CÁC MODULE DÙNG CHUNG CỦA DỰ ÁN
 // ---------------------------------------------------------------------------
 import http from 'node:http';                                             // Module http: tạo web server thuần của Node.js
 import fsp from 'node:fs/promises';                                       // Module fs (bản Promise): đọc file bất đồng bộ
 import path from 'node:path';                                             // Module path: ghép và chuẩn hoá đường dẫn an toàn
 import { ensureAllCsvFiles } from './utils/csvUtils.js';                  // (2A) Khởi tạo users.csv/tasks.csv kèm header nếu thiếu
+import { readJsonBody } from './utils/httpUtils.js';                      // (3)  Đọc và parse JSON body an toàn, có giới hạn dung lượng
 import { sendSuccess, sendError, sendErrorFromException } from './utils/responseUtils.js';   // (2B) Quy ước JSON dùng chung
+import { handleAuthRoutes } from './routes/authRoutes.js';                // (3)  Nhóm API xác thực (signup, verify, resend)
 
 // ---------------------------------------------------------------------------
 // PHẦN 2: XÁC ĐỊNH ĐƯỜNG DẪN GỐC CỦA DỰ ÁN
@@ -57,8 +60,9 @@ if (!JWT_SECRET) {                                                       // Thi�
 
 const SMTP_KEYS = ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_APP_PASSWORD', 'APP_BASE_URL'];   // Các biến cần cho email
 const missingSmtpKeys = SMTP_KEYS.filter((key) => !process.env[key]);    // Lọc ra biến SMTP còn thiếu
-if (missingSmtpKeys.length > 0) {                                        // Còn thiếu -> chỉ cảnh báo, không dừng server
-    console.warn(`[config] Cảnh báo: còn thiếu biến SMTP: ${missingSmtpKeys.join(', ')} (cần ở Bước 3).`);
+if (missingSmtpKeys.length > 0) {                                        // Còn thiếu -> cảnh báo rõ ràng ngay khi khởi động
+    console.warn(`[config] Cảnh báo: còn thiếu biến SMTP: ${missingSmtpKeys.join(', ')} - chức năng gửi email xác thực sẽ không hoạt động.`);
+    console.warn('[config] Xem hướng dẫn tạo Gmail App Password trong README.md (mục Environment variables).');
 }
 
 // ---------------------------------------------------------------------------
@@ -80,8 +84,7 @@ const MIME_TYPES = {
 // ---------------------------------------------------------------------------
 // PHẦN 6: HÀM PHỤ TRỢ RIÊNG CHO FILE TĨNH
 // ---------------------------------------------------------------------------
-// GHI CHÚ: các hàm gửi JSON (sendSuccess/sendError/...) đã chuyển sang
-//          backend/src/utils/responseUtils.js ở Bước 2B để dùng chung cả dự án.
+// GHI CHÚ: các hàm gửi JSON đã được chuyển sang backend/src/utils/responseUtils.js (Bước 2B)
 function sendText(res, statusCode, message) {                            // Gửi phản hồi dạng text thuần
     res.writeHead(statusCode, { 'Content-Type': MIME_TYPES['.txt'] });     // Khai báo nội dung là text UTF-8
     res.end(message);                                                      // Gửi nội dung ra client
@@ -138,9 +141,11 @@ async function serveStaticFile(req, res, pathname) {
 }
 
 // ---------------------------------------------------------------------------
-// PHẦN 8: XỬ LÝ API (hiện có endpoint kiểm tra server còn sống)
+// PHẦN 8: XỬ LÝ API (điều phối tới từng nhóm route)
 // ---------------------------------------------------------------------------
-async function handleApiRequest(req, res, pathname) {
+async function handleApiRequest(ctx) {
+    const { req, res, pathname } = ctx;                                    // Lấy các thành phần cần dùng từ context
+
     if (pathname === '/api/health' && req.method === 'GET') {              // GET /api/health: kiểm tra server còn sống
         sendSuccess(res, 'Server is running', {                              // Trả JSON theo quy ước { status, message, data }
             nodeVersion: process.version,                                      // Phiên bản Node.js đang chạy
@@ -148,7 +153,11 @@ async function handleApiRequest(req, res, pathname) {
         });
         return;                                                              // Kết thúc hàm xử lý
     }
-    // Các endpoint khác (auth, users, tasks) sẽ được thêm ở Bước 3, 4, 5
+
+    // Nhóm route xác thực (Bước 3): signup, verify-email, resend-verification
+    if (await handleAuthRoutes(ctx)) return;                               // Đã xử lý xong -> kết thúc
+
+    // Các nhóm route khác (users, tasks) sẽ được thêm ở Bước 5
     sendError(res, 404, `API endpoint not found: ${req.method} ${pathname}`);   // Không khớp endpoint nào
 }
 
@@ -159,10 +168,17 @@ async function requestHandler(req, res) {
     try {
         const url = new URL(req.url, 'http://localhost');                    // Phân tích URL để lấy path và query
         const pathname = url.pathname;                                       // Ví dụ: /page/login.html
+
         if (pathname === '/api' || pathname.startsWith('/api/')) {           // Là request API
-            await handleApiRequest(req, res, pathname);                        // Chuyển cho phần xử lý API
+            let bodyPromise = null;                                            // Biến nhớ Promise đọc body (đọc 1 lần duy nhất)
+            const getBody = () => {                                            // Hàm lấy body theo kiểu "lazy" (chỉ đọc khi cần)
+                if (!bodyPromise) bodyPromise = readJsonBody(req);               // Lần gọi đầu tiên -> bắt đầu đọc body
+                return bodyPromise;                                              // Các lần sau dùng lại cùng kết quả
+            };
+            await handleApiRequest({ req, res, url, pathname, getBody });      // Chuyển cho phần xử lý API kèm context
             return;                                                            // Kết thúc hàm
         }
+
         if (req.method !== 'GET' && req.method !== 'HEAD') {                 // File tĩnh chỉ cho phép GET/HEAD
             sendError(res, 405, 'Method not allowed for static files');        // Sai method -> trả 405
             return;                                                            // Kết thúc hàm
