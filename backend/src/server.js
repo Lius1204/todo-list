@@ -14,7 +14,8 @@
 // ---------------------------------------------------------------------------
 import http from 'node:http';        // Module http: tạo web server thuần của Node.js
 import fsp from 'node:fs/promises';  // Module fs (bản Promise): đọc file bất đồng bộ
-import path from 'node:path';        // Module path: ghép và chuẩn hoá đường dẫn an toàn
+import path from 'node:path';
+import { ensureAllCsvFiles } from './utils/csvUtils.js';  // (MỚI - Bước 2A) Khởi tạo file CSV khi chạy server   // Module path: ghép và chuẩn hoá đường dẫn an toàn
 
 // ---------------------------------------------------------------------------
 // PHẦN 2: XÁC ĐỊNH ĐƯỜNG DẪN GỐC CỦA DỰ ÁN
@@ -211,6 +212,16 @@ async function requestHandler(req, res) {
 // ---------------------------------------------------------------------------
 // PHẦN 10: KHỞI ĐỘNG SERVER
 // ---------------------------------------------------------------------------
+
+// --- (MỚI - Bước 2A) Khởi tạo 2 file CSV dữ liệu nếu chưa tồn tại ---
+try {
+    await ensureAllCsvFiles();                                        // Tạo users.csv/tasks.csv kèm header nếu thiếu
+    console.log('[storage] Đã chuẩn bị file CSV: backend/db/users.csv, backend/db/tasks.csv');
+} catch (error) {
+    console.error('[storage] LỖI khởi tạo file CSV:', error.message); // In lỗi ngắn gọn, không in stack trace
+    process.exit(1);                                                  // Dừng server vì không có nơi lưu dữ liệu
+}
+
 const server = http.createServer(requestHandler);              // Tạo server từ hàm xử lý request
 server.listen(PORT, () => {                                    // Lắng nghe kết nối trên cổng PORT
     console.log('==========================================================');
