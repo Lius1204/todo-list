@@ -7,12 +7,15 @@
  *            - POST /api/signup                : đăng ký tài khoản mới
  *            - GET  /api/verify-email?token=... : kích hoạt tài khoản (trả HTML)
  *            - POST /api/resend-verification   : gửi lại email xác thực
+ *            - POST /api/login                 : đăng nhập, nhận JWT (Bước 4)
+ *            - GET  /api/me                    : thông tin user đang đăng nhập (Bước 4, bảo vệ)
+ *            - POST /api/logout                : xác nhận đăng xuất phía client (Bước 4, bảo vệ)
  * ============================================================================
  */
 
 import { ApiError, sendSuccess } from '../utils/responseUtils.js';                          // Quy ước phản hồi dùng chung
 import { assertJsonObject } from '../utils/validationUtils.js';                             // Kiểm tra body là object JSON
-import { registerUser, toPublicUser, verifyEmailToken, resendVerificationEmail } from '../services/authService.js';   // Nghiệp vụ xác thực
+import { registerUser, toPublicUser, verifyEmailToken, resendVerificationEmail, loginUser } from '../services/authService.js';   // Nghiệp vụ xác thực
 
 // Đường dẫn trang Login (dùng cho nút trong trang HTML kết quả xác thực)
 const LOGIN_PAGE_URL = '/page/login.html';
@@ -130,4 +133,38 @@ export async function handleResendVerification({ res, getBody }) {
 
     // Trả message CHUNG cho mọi trường hợp: không tiết lộ tài khoản có tồn tại hay không
     sendSuccess(res, result.message, null, 200);
+}
+
+// --- POST /api/login: đăng nhập và nhận JWT (Bước 4) ---
+export async function handleLogin({ res, getBody }) {
+    const body = await getBody();                            // Đọc JSON body của request
+    assertJsonObject(body);                                  // Body phải là object JSON
+
+    const { token, user } = await loginUser({                // Kiểm tra thông tin đăng nhập (ném ApiError 401/403 nếu sai)
+        email: body.email,                                     // Email người dùng nhập
+        password: body.password,                               // Mật khẩu người dùng nhập
+    });
+
+    sendSuccess(res, 'Login successful', {                   // Phản hồi thành công theo quy ước chung
+        token,                                                 // JWT để frontend lưu vào localStorage
+        user: toPublicUser(user),                              // Thông tin công khai: id, name, email (KHÔNG có hash/salt)
+    }, 200);
+}
+
+// --- GET /api/me: thông tin user đang đăng nhập (đã qua middleware requireAuth) ---
+export async function handleMe({ res, user }) {
+    sendSuccess(res, 'Authenticated user profile', toPublicUser(user), 200);   // Chỉ trả id/name/email
+}
+
+// --- POST /api/logout: xác nhận đăng xuất phía client (Bước 4) ---
+export async function handleLogout({ res, user }) {
+    console.log(`[auth] Người dùng ${user.id} yêu cầu đăng xuất (client sẽ xoá token khỏi localStorage).`);
+    // GHI CHÚ (mục 9 - Logout limitation): JWT stateless nên server KHÔNG thể thu hồi token.
+    // Message nói rõ điều này để không hứa hẹn điều hệ thống không làm được.
+    sendSuccess(
+        res,
+        'Logged out on this client. The browser must delete its stored token. Note: this stateless JWT cannot be revoked on the server, so a copied token remains valid until it expires.',
+        null,
+        200,
+    );
 }

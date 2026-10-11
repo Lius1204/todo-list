@@ -1,21 +1,26 @@
 /**
  * ============================================================================
  *  FILE    : backend/src/services/authService.js
- *  MỤC ĐÍCH: Toàn bộ nghiệp vụ xác thực: đăng ký, xác thực email, gửi lại email.
- *  NGUYÊN TẮC (mục 6.1 + 8 của đề bài):
+ *  MỤC ĐÍCH: Toàn bộ nghiệp vụ xác thực: đăng ký, xác thực email, gửi lại email,
+ *            và đăng nhập (Bước 4).
+ *  NGUYÊN TẮC (mục 6.1 + 8 + 9 của đề bài):
  *            - Tài khoản mới có status = "pending", chỉ "active" mới đăng nhập được.
  *            - Chỉ lưu HASH của token xác thực, không lưu token gốc.
  *            - Lưu tài khoản TRƯỚC, gửi email SAU và không chờ SMTP (response ≤ 0.5s).
  *            - Lỗi gửi email KHÔNG làm hỏng việc đăng ký; tài khoản vẫn pending.
+ *            - Login: cùng một thông báo cho "email sai" và "mật khẩu sai"
+ *              để không tiết lộ email nào có tồn tại trong hệ thống.
+ *  CẬP NHẬT: Bước 4 thêm loginUser.
  * ============================================================================
  */
 
 import { ApiError } from '../utils/responseUtils.js';                                   // Lớp lỗi nghiệp vụ dùng chung
 import { USERS_CSV_PATH, USERS_HEADERS, readCsvFile, updateCsvFile } from '../utils/csvUtils.js';   // Lớp lưu trữ CSV
 import { generateUserId } from '../utils/idUtils.js';                                   // Sinh ID user duy nhất
-import { buildPasswordRecord } from '../utils/passwordUtils.js';                        // Băm mật khẩu (scrypt + salt)
+import { buildPasswordRecord, hashPassword, verifyPassword } from '../utils/passwordUtils.js';   // Băm/kiểm tra mật khẩu
 import { generateVerificationToken, hashVerificationToken, safeCompareHex } from '../utils/tokenUtils.js';   // Token xác thực
-import { assertValidEmail, assertValidName, assertValidPassword, normalizeEmail } from '../utils/validationUtils.js';   // Kiểm tra dữ liệu
+import { assertValidEmail, assertValidName, assertValidPassword, assertLoginPassword, normalizeEmail } from '../utils/validationUtils.js';   // Kiểm tra dữ liệu
+import { signAuthToken } from '../utils/jwtUtils.js';                                   // Ký JWT khi đăng nhập thành công
 import { isEmailConfigured, sendVerificationEmail } from './emailService.js';           // Dịch vụ gửi email
 
 // --- Các con số cấu hình nghiệp vụ ---
@@ -27,6 +32,14 @@ const VERIFICATION_TOKEN_PATTERN = /^[0-9a-f]{64}$/;      // Token hợp lệ: 3
 
 // Thông báo dùng chung cho endpoint gửi lại email: KHÔNG tiết lộ email có tồn tại hay không
 const GENERIC_RESEND_MESSAGE = 'If this email address belongs to an account that is not verified yet, a new verification email has been sent.';
+
+// Thông báo dùng chung cho login sai: KHÔNG tiết lộ email có tồn tại hay không (mục 11.1 của đề)
+const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
+
+// Salt cố định chỉ dùng cho lần băm "giả" khi email không tồn tại.
+// Mục đích: thời gian phản hồi của trường hợp email sai GIỐNG trường hợp email đúng,
+// tránh kẻ tấn công đo thời gian để dò xem email nào có trong hệ thống.
+const TIMING_EQUALIZATION_SALT = 'timing-equalization-salt-value';
 
 // --- Hàm tiện ích liên quan tới user ---
 
@@ -267,4 +280,36 @@ export async function resendVerificationEmail(emailInput) {
 
     scheduleVerificationEmail({ userRow: updatedRow, verificationToken: newToken });   // Gửi email mới ở chế độ nền
     return { sent: true, message: GENERIC_RESEND_MESSAGE, verificationToken: newToken };
+}
+
+// --- Nghiệp vụ 4: Đăng nhập (Bước 4) ---
+
+/**
+ * Đăng nhập: kiểm tra email + mật khẩu, chặn tài khoản chưa active, ký JWT.
+ * Trả về { token, user } - user là dòng đầy đủ (nội bộ), controller tự lọc field công khai.
+ */
+export async function loginUser({ email, password }) {
+    const checkedEmail = assertValidEmail(email);                 // Kiểm tra + chuẩn hoá email
+    const checkedPassword = assertLoginPassword(password);        // Đảm bảo mật khẩu có dữ liệu (login không kiểm độ mạnh)
+
+    const userRow = await findUserByEmail(checkedEmail);          // Tìm tài khoản theo email đã chuẩn hoá
+    if (!userRow) {
+        // Email không tồn tại: vẫn thực hiện 1 lần băm "giả" để thời gian phản hồi
+        // GIỐNG trường hợp email tồn tại -> không lộ thông tin qua timing attack.
+        await hashPassword(checkedPassword, TIMING_EQUALIZATION_SALT);
+        throw new ApiError(401, INVALID_CREDENTIALS_MESSAGE);       // Thông báo chung, không nói rõ sai email hay sai mật khẩu
+    }
+
+    const isPasswordValid = await verifyPassword(checkedPassword, userRow.passwordSalt, userRow.passwordHash);   // So hash bằng scrypt + timingSafeEqual
+    if (!isPasswordValid) {
+        throw new ApiError(401, INVALID_CREDENTIALS_MESSAGE);       // Vẫn dùng CÙNG thông báo chung như trên
+    }
+
+    if (userRow.status !== 'active') {
+        // Mật khẩu ĐÚNG nhưng tài khoản chưa kích hoạt -> được phép nói rõ để người dùng biết đường xác thực email
+        throw new ApiError(403, 'Your account is not verified yet. Please check your inbox and click the verification link, or use "Resend verification email" on the Login page.');
+    }
+
+    const token = signAuthToken(userRow.id);                      // Ký JWT: sub = user ID; hạn đọc từ JWT_EXPIRES_DAYS trong .env
+    return { token, user: userRow };                              // Trả token + dòng user; controller lọc field công khai khi trả client
 }
