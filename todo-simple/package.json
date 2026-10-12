@@ -7,6 +7,7 @@
         "seed": "node seed.js",
         "start": "node --env-file=.env server.js",
         "mail:test": "node --env-file=.env mail.js",
-        "auth:test": "node auth.js"
+        "auth:test": "node auth.js",
+        "tasks:test": "node tasks.js"
     }
 }
