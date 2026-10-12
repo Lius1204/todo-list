@@ -1,0 +1,390 @@
+{
+    "info": {
+        "name": "Todo List API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:3000"
+        },
+        {
+            "key": "signup_email",
+            "value": "thay.bang.gmail.cua.ban@gmail.com"
+        },
+        {
+            "key": "seed_email",
+            "value": "seeduser0004242@example.com"
+        },
+        {
+            "key": "password",
+            "value": "Example@123"
+        },
+        {
+            "key": "verify_token",
+            "value": ""
+        },
+        {
+            "key": "token",
+            "value": ""
+        },
+        {
+            "key": "task_id",
+            "value": ""
+        },
+        {
+            "key": "user_id",
+            "value": ""
+        }
+    ],
+    "item": [
+        {
+            "name": "01 - Health check",
+            "request": {
+                "method": "GET",
+                "url": "{{base_url}}/api/health"
+            }
+        },
+        {
+            "name": "02 - Signup (email thật - 201)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"name\":\"Demo User\",\"email\":\"{{signup_email}}\",\"password\":\"{{password}}\"}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": "{{base_url}}/api/signup"
+            }
+        },
+        {
+            "name": "03 - Signup email trùng seed (409)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"name\":\"Demo\",\"email\":\"{{seed_email}}\",\"password\":\"{{password}}\"}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": "{{base_url}}/api/signup"
+            }
+        },
+        {
+            "name": "04 - Signup mật khẩu yếu (400)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"name\":\"Demo\",\"email\":\"weak.demo@example.com\",\"password\":\"weak\"}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": "{{base_url}}/api/signup"
+            }
+        },
+        {
+            "name": "05 - Verify email (dán token từ link Gmail)",
+            "request": {
+                "method": "GET",
+                "url": "{{base_url}}/api/verify-email?token={{verify_token}}"
+            }
+        },
+        {
+            "name": "06 - Resend verification",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"email\":\"{{signup_email}}\"}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": "{{base_url}}/api/resend-verification"
+            }
+        },
+        {
+            "name": "07 - Login (200 - tự lưu token)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"email\":\"{{signup_email}}\",\"password\":\"{{password}}\"}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": "{{base_url}}/api/login"
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                            "pm.collectionVariables.set('token', pm.response.json().data.token);"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "08 - Login sai mật khẩu (401)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"email\":\"{{signup_email}}\",\"password\":\"WrongPass@1\"}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": "{{base_url}}/api/login"
+            }
+        },
+        {
+            "name": "09 - Me (Bearer)",
+            "request": {
+                "method": "GET",
+                "url": "{{base_url}}/api/me",
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{token}}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "10 - Users (Bearer - copy 1 id vào biến user_id)",
+            "request": {
+                "method": "GET",
+                "url": "{{base_url}}/api/users",
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{token}}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "11 - Create task (201 - tự lưu task_id)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"content\":\"Practice Node.js HTTP\"}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": "{{base_url}}/api/tasks",
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{token}}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                            "pm.collectionVariables.set('task_id', pm.response.json().data.id);"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "12 - List tasks (Bearer)",
+            "request": {
+                "method": "GET",
+                "url": "{{base_url}}/api/tasks",
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{token}}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "13 - Assign + complete (PATCH)",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"assignedTo\":\"{{user_id}}\",\"completed\":true}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": "{{base_url}}/api/tasks/{{task_id}}",
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{token}}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "14 - Patch field cấm (400)",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"createdBy\":\"user_fake\"}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": "{{base_url}}/api/tasks/{{task_id}}",
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{token}}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "15 - Delete task (200, gọi lại 404)",
+            "request": {
+                "method": "DELETE",
+                "url": "{{base_url}}/api/tasks/{{task_id}}",
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{token}}",
+                            "type": "string"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "16 - Tasks không token (401)",
+            "request": {
+                "method": "GET",
+                "url": "{{base_url}}/api/tasks"
+            }
+        },
+        {
+            "name": "17 - Path traversal (403)",
+            "request": {
+                "method": "GET",
+                "url": "{{base_url}}/..%2F.env"
+            }
+        }
+    ]
+}
