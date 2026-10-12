@@ -5,6 +5,10 @@
     "description": "Todo list - bản đơn giản để học Node.js thuần (http, fs, crypto)",
     "scripts": {
         "seed": "node seed.js",
-        "start": "node server.js"
+        "start": "node --env-file=.env server.js",
+        "mail:test": "node --env-file=.env mail.js"
+    },
+    "dependencies": {
+        "nodemailer": "^10.1.0"
     }
 }
