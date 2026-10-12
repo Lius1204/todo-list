@@ -1,6 +1,7 @@
 /* ===========================================================================
    FILE    : frontend/style/assign-task.css
-   MỤC ĐÍCH: Trang trí trang Task list (thêm task, danh sách task, gán user).
+   MỤC ĐÍCH: Trang trí trang Task list: thêm task, danh sách task, checkbox
+             hoàn thành, tên user được gán, chế độ sửa và dropdown gán việc.
    =========================================================================== */
 
 * { box-sizing: border-box; }                      /* Tính padding/border vào kích thước phần tử */
@@ -8,12 +9,13 @@
 body {                                             /* Áp dụng cho toàn trang */
   margin: 0;                                       /* Xoá margin mặc định */
   background: #f2f4f7;                             /* Nền xám nhẹ */
-  font-family: Arial, Helvetica, sans-serif;       /* Font chữ cơ bản */
+  font-family: Arial, Helvetica, sans-serif;       /* Font chữ cơ bản, dễ đọc */
   color: #1f2937;                                  /* Màu chữ chính */
 }
 
-.topbar {                                          /* Thanh trên cùng */
-  display: flex;                                   /* Dùng flexbox để xếp ngang */
+/* ----- Thanh trên cùng ----- */
+.topbar {                                          /* Thanh trên cùng của ứng dụng */
+  display: flex;                                   /* Xếp ngang bằng flexbox */
   align-items: center;                             /* Căn giữa theo chiều dọc */
   justify-content: space-between;                  /* Đẩy 2 đầu về 2 phía */
   padding: 14px 24px;                              /* Khoảng đệm trong thanh */
@@ -21,19 +23,20 @@ body {                                             /* Áp dụng cho toàn trang
   border-bottom: 1px solid #e5e7eb;                /* Đường kẻ phân cách phía dưới */
 }
 
-.topbar-title { margin: 0; font-size: 22px; }      /* Tiêu đề "Todo list" trên thanh */
+.topbar-title { margin: 0; font-size: 22px; }      /* Tiêu đề "Todo list" */
 
-.topbar-user { display: flex; align-items: center; gap: 12px; }  /* Nhóm tên user + nút logout */
+.topbar-user { display: flex; align-items: center; gap: 12px; }   /* Nhóm tên user + nút logout */
 
 .user-name { font-size: 14px; color: #4b5563; }    /* Tên user đang đăng nhập */
 
-.container {                                       /* Vùng nội dung chính */
-  max-width: 860px;                                /* Giới hạn bề rộng cho dễ đọc */
+/* ----- Vùng nội dung chính ----- */
+.container {                                       /* Khung nội dung */
+  max-width: 880px;                                /* Giới hạn bề rộng cho dễ đọc */
   margin: 24px auto;                               /* Căn giữa theo chiều ngang */
-  padding: 0 16px;                                 /* Chừa lề 2 bên trên màn hình nhỏ */
+  padding: 0 16px;                                 /* Chừa lề 2 bên */
 }
 
-.panel {                                           /* Mỗi khối nội dung (add task / task list) */
+.panel {                                           /* Mỗi khối nội dung (Add task / Task list) */
   padding: 20px;                                   /* Khoảng đệm trong khối */
   margin-bottom: 20px;                             /* Cách khối tiếp theo 20px */
   background: #ffffff;                             /* Nền trắng */
@@ -41,9 +44,10 @@ body {                                             /* Áp dụng cho toàn trang
   border-radius: 12px;                             /* Bo góc khối */
 }
 
-.panel-title { margin: 0 0 14px; font-size: 18px; }  /* Tiêu đề của khối */
+.panel-title { margin: 0 0 14px; font-size: 18px; }   /* Tiêu đề của khối */
 
-.add-form { display: flex; gap: 10px; }            /* Form thêm task: ô nhập và nút nằm cạnh nhau */
+/* ----- Form thêm task ----- */
+.add-form { display: flex; gap: 10px; }            /* Ô nhập và nút Add nằm cạnh nhau */
 
 .input {                                           /* Ô nhập liệu dùng chung */
   flex: 1;                                         /* Chiếm hết phần rộng còn lại */
@@ -53,8 +57,9 @@ body {                                             /* Áp dụng cho toàn trang
   border-radius: 8px;                              /* Bo góc */
 }
 
-.input:focus { outline: 2px solid #2563eb; outline-offset: 1px; }  /* Viền xanh khi đang gõ */
+.input:focus { outline: 2px solid #2563eb; outline-offset: 1px; }   /* Viền xanh khi đang gõ */
 
+/* ----- Nút bấm ----- */
 .button {                                          /* Nút chính */
   padding: 10px 18px;                              /* Khoảng đệm trong nút */
   font-size: 15px;                                 /* Cỡ chữ */
@@ -67,7 +72,7 @@ body {                                             /* Áp dụng cho toàn trang
 }
 
 .button:hover { background: #1d4ed8; }             /* Đổi màu khi rê chuột */
-.button:disabled { opacity: 0.6; cursor: not-allowed; }  /* Nút mờ khi đang xử lý */
+.button:disabled { opacity: 0.6; cursor: not-allowed; }   /* Nút mờ khi đang xử lý */
 
 .button-secondary {                                /* Nút phụ (Logout) */
   color: #374151;                                  /* Chữ xám đậm */
@@ -77,6 +82,7 @@ body {                                             /* Áp dụng cho toàn trang
 
 .button-secondary:hover { background: #f3f4f6; }   /* Đổi nền nhẹ khi rê chuột */
 
+/* ----- Thông báo ----- */
 .message {                                         /* Thông báo chung */
   min-height: 20px;                                /* Giữ chỗ tránh nhảy layout */
   margin: 0 0 12px;                                /* Cách dưới 12px */
@@ -93,23 +99,31 @@ body {                                             /* Áp dụng cho toàn trang
   color: #b91c1c;                                  /* Màu đỏ */
 }
 
-.task-list { list-style: none; margin: 0; padding: 0; }  /* Danh sách task bỏ dấu chấm đầu dòng */
+/* ----- Danh sách task ----- */
+.task-list { list-style: none; margin: 0; padding: 0; }   /* Bỏ dấu chấm đầu dòng của <ul> */
 
-.task-item {                                       /* Một dòng task */
-  display: flex;                                   /* Xếp các phần tử trong dòng theo hàng ngang */
-  align-items: center;                             /* Căn giữa theo chiều dọc */
-  gap: 10px;                                       /* Khoảng cách giữa các phần tử */
+.task-empty { padding: 12px 0; font-size: 14px; color: #6b7280; }   /* Dòng thông báo khi chưa có task */
+
+.task-item {                                       /* Mỗi task là 1 khối */
   padding: 10px 0;                                 /* Khoảng đệm trên/dưới */
   border-bottom: 1px solid #f3f4f6;                /* Đường kẻ phân cách giữa các task */
 }
 
-.task-content { flex: 1; font-size: 15px; word-break: break-word; }  /* Nội dung task chiếm phần rộng nhất */
+.task-row {                                        /* Hàng chính của task */
+  display: flex;                                   /* Xếp ngang: checkbox, nội dung, tên user, nút */
+  align-items: center;                             /* Căn giữa theo chiều dọc */
+  gap: 10px;                                       /* Khoảng cách giữa các phần tử */
+}
 
-.task-content.completed { text-decoration: line-through; color: #9ca3af; }  /* Task đã xong: gạch ngang, mờ đi */
+.task-checkbox { width: 18px; height: 18px; cursor: pointer; }   /* Checkbox hoàn thành to rõ hơn */
 
-.task-assignee { font-size: 13px; color: #4b5563; }  /* Tên user được giao việc, hiển thị trong ngoặc đơn */
+.task-content { flex: 1; font-size: 15px; word-break: break-word; }   /* Nội dung task chiếm phần rộng nhất */
 
-.task-actions { display: flex; align-items: center; gap: 6px; }  /* Nhóm nút Edit / Delete / Assign */
+.task-content.completed { text-decoration: line-through; color: #9ca3af; }   /* Task đã xong: gạch ngang, mờ đi */
+
+.task-assignee { font-size: 13px; color: #4b5563; white-space: nowrap; }   /* Tên user được gán trong ngoặc đơn */
+
+.task-actions { display: flex; align-items: center; gap: 6px; }   /* Nhóm nút Edit / Assign / Delete */
 
 .icon-button {                                     /* Nút nhỏ dạng biểu tượng */
   padding: 6px 10px;                               /* Khoảng đệm nhỏ */
@@ -121,11 +135,33 @@ body {                                             /* Áp dụng cho toàn trang
 }
 
 .icon-button:hover { background: #f3f4f6; }        /* Đổi nền khi rê chuột */
+.icon-button:disabled { opacity: 0.6; cursor: not-allowed; }   /* Nút mờ khi đang xử lý */
 
-.assign-select, .edit-input {                      /* Dropdown chọn user và ô sửa nội dung */
+.danger-button { color: #b91c1c; border-color: #fecaca; }       /* Nút Delete: chữ đỏ để cảnh báo */
+.danger-button:hover { background: #fef2f2; }                   /* Nền đỏ rất nhạt khi rê chuột */
+
+/* ----- Chế độ sửa nội dung và dropdown gán việc ----- */
+.edit-input {                                      /* Ô sửa nội dung task tại chỗ */
+  flex: 1;                                         /* Chiếm hết phần rộng còn lại */
+  padding: 6px 8px;                                /* Khoảng đệm */
+  font-size: 15px;                                 /* Cỡ chữ bằng lúc xem */
+  border: 1px solid #2563eb;                       /* Viền xanh báo đang sửa */
+  border-radius: 6px;                              /* Bo góc */
+}
+
+.task-assign-row {                                 /* Hàng chọn user hiện ra khi bấm Assign */
+  display: flex;                                   /* Xếp ngang: chữ nhắc, dropdown, nút Cancel */
+  align-items: center;                             /* Căn giữa theo chiều dọc */
+  gap: 8px;                                        /* Khoảng cách giữa các phần tử */
+  margin: 8px 0 0 28px;                            /* Thụt lề cho thẳng với nội dung task */
+}
+
+.assign-hint { font-size: 13px; color: #6b7280; }  /* Chữ "Assign to:" mờ nhẹ */
+
+.assign-select {                                   /* Dropdown chọn user */
   padding: 6px 8px;                                /* Khoảng đệm */
   font-size: 14px;                                 /* Cỡ chữ */
   border: 1px solid #d1d5db;                       /* Viền xám nhạt */
   border-radius: 6px;                              /* Bo góc */
-  max-width: 180px;                                /* Không cho rộng quá */
+  max-width: 220px;                                /* Không cho rộng quá */
 }
