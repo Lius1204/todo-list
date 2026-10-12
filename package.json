@@ -7,7 +7,17 @@
     "main": "backend/src/server.js",
     "scripts": {
         "start": "node backend/src/server.js",
-        "dev": "node --watch backend/src/server.js"
+        "dev": "node --watch backend/src/server.js",
+        "seed": "node backend/scripts/seedUsers.js",
+        "check": "node backend/scripts/checkSmoke.js",
+        "test:csv": "node backend/scripts/testCsvRoundTrip.js",
+        "test:utils": "node backend/scripts/testUtils.js",
+        "test:signup": "node backend/scripts/testSignupFlow.js",
+        "test:login": "node backend/scripts/testLoginFlow.js",
+        "test:tasks": "node backend/scripts/testTaskFlow.js",
+        "test:frontend": "node backend/scripts/testFrontendAssets.js",
+        "test:seed": "node backend/scripts/testSeedEmailCheck.js",
+        "test:all": "npm run test:csv && npm run test:utils && npm run test:signup && npm run test:login && npm run test:tasks && npm run test:frontend && npm run test:seed"
     },
     "engines": {
         "node": ">=20.12.0"
