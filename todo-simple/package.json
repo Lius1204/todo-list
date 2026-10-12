@@ -6,9 +6,7 @@
     "scripts": {
         "seed": "node seed.js",
         "start": "node --env-file=.env server.js",
-        "mail:test": "node --env-file=.env mail.js"
-    },
-    "dependencies": {
-        "nodemailer": "^10.1.0"
+        "mail:test": "node --env-file=.env mail.js",
+        "auth:test": "node auth.js"
     }
 }
