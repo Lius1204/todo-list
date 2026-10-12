@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"> <!-- UTF-8 để hiện đúng tiếng Việt -->
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- hiển thị đúng trên điện thoại -->
+    <title>Todo list - Tasks</title> <!-- tiêu đề trên tab trình duyệt -->
+    <link rel="stylesheet" href="/style.css"> <!-- dùng chung file trang trí với trang login -->
+</head>
+
+<body class="tasks-page"> <!-- class riêng để CSS biết đây là trang task, không căn giữa -->
+
+    <header class="topbar"> <!-- thanh trên cùng của ứng dụng -->
+        <h1 class="topbar-title">Todo list</h1> <!-- tên ứng dụng, bên trái -->
+        <div class="topbar-user"> <!-- nhóm bên phải: email + nút Logout -->
+            <span id="current-user" class="user-email"></span>
+            <!-- chỗ hiện email người đang đăng nhập, JS sẽ điền vào -->
+            <button id="logout-button" class="button small-button" type="button">Logout</button>
+            <!-- type=button để không submit form nào -->
+        </div>
+    </header>
+
+    <main class="container"> <!-- vùng nội dung chính, có bề rộng giới hạn -->
+
+        <p id="page-message" class="message"></p> <!-- thông báo chung của cả trang -->
+
+        <section class="panel"> <!-- KHỐI 1: thêm task mới -->
+            <h2 class="panel-title">Add task</h2> <!-- tiêu đề khối -->
+
+            <form id="add-form" class="add-form" novalidate> <!-- form thêm task; novalidate để tự hiện lỗi cho đẹp -->
+                <input id="task-input" class="input" type="text" maxlength="100" <!-- ô nhập nội dung task, chặn gõ quá
+                    100 ký tự ngay trên trình duyệt -->
+                placeholder="Task..."> <!-- chữ mờ gợi ý, đúng như trong ảnh giảng viên -->
+                <button id="add-button" class="button small-button" type="submit">Add</button>
+                <!-- nút Add nằm cạnh ô nhập -->
+            </form>
+
+            <p id="task-input-error" class="field-error"></p> <!-- chỗ hiện lỗi riêng của ô nhập task -->
+            <p id="add-message" class="message"></p> <!-- chỗ hiện kết quả thêm task -->
+        </section>
+
+        <section class="panel"> <!-- KHỐI 2: danh sách task -->
+            <h2 class="panel-title">Task list</h2> <!-- tiêu đề khối -->
+            <p id="list-message" class="message"></p> <!-- chỗ hiện thông báo của danh sách task -->
+            <ul id="task-list" class="task-list"></ul> <!-- JS sẽ tự tạo từng dòng <li> ở đây -->
+        </section>
+
+    </main>
+
+    <script src="/tasks.js"></script> <!-- nạp script; đặt cuối body nên HTML đã sẵn sàng -->
+</body>
+
+</html>

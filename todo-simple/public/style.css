@@ -176,3 +176,157 @@ form {
 }
 
 /* rê chuột vào thì hiện gạch chân để biết bấm được */
+
+/* ============================================================================
+   PHẦN BỔ SUNG CHO TRANG TASK (thêm vào cuối file style.css)
+   ============================================================================ */
+
+.tasks-page {                                      /* body của trang task, ghi đè style căn giữa của trang login */
+  display: block;                                  /* bỏ flexbox để nội dung xếp từ trên xuống */
+  min-height: 100vh;                               /* vẫn giữ chiều cao tối thiểu bằng màn hình */
+}
+
+.topbar {                                          /* thanh trên cùng của ứng dụng */
+  display: flex;                                   /* xếp các phần tử theo hàng ngang */
+  align-items: center;                             /* căn giữa theo chiều dọc */
+  justify-content: space-between;                  /* đẩy tiêu đề sang trái, nhóm người dùng sang phải */
+  padding: 14px 24px;                              /* khoảng đệm bên trong thanh */
+  background: #ffffff;                             /* nền trắng nổi bật trên nền xám */
+  border-bottom: 1px solid #e5e7eb;                /* đường kẻ phân cách phía dưới */
+}
+
+.topbar-title { margin: 0; font-size: 22px; }      /* tiêu đề "Todo list" trên thanh */
+
+.topbar-user { display: flex; align-items: center; gap: 12px; }  /* nhóm email + nút Logout, cách nhau 12px */
+
+.user-email { font-size: 14px; color: #4b5563; }   /* email người đang đăng nhập, chữ nhỏ màu xám */
+
+.container {                                       /* vùng nội dung chính */
+  max-width: 880px;                                /* giới hạn bề rộng để dòng chữ không quá dài, dễ đọc */
+  margin: 24px auto;                               /* cách trên 24px và căn giữa theo chiều ngang */
+  padding: 0 16px;                                 /* chừa lề hai bên khi màn hình nhỏ */
+}
+
+.panel {                                           /* mỗi khối nội dung: Add task, Task list */
+  padding: 20px;                                   /* khoảng đệm bên trong khối */
+  margin-bottom: 20px;                             /* cách khối tiếp theo 20px */
+  background: #ffffff;                             /* nền trắng */
+  border: 1px solid #e5e7eb;                       /* viền xám nhạt */
+  border-radius: 12px;                             /* bo tròn góc khối */
+}
+
+.panel-title {                                     /* tiêu đề của mỗi khối */
+  margin: 0 0 14px;                                /* cách phía dưới 14px */
+  font-size: 18px;                                 /* chữ lớn hơn nội dung thường */
+}
+
+.add-form { display: flex; gap: 10px; }            /* ô nhập và nút Add nằm cạnh nhau, cách nhau 10px */
+
+.add-form .input { flex: 1; }                      /* ô nhập chiếm hết phần rộng còn lại */
+
+.small-button {                                    /* nút nhỏ dùng trên thanh trên cùng và trong form Add */
+  padding: 9px 16px;                               /* khoảng đệm nhỏ hơn nút mặc định */
+  font-size: 14px;                                 /* chữ nhỏ hơn một chút */
+  margin-top: 0;                                   /* bỏ khoảng cách trên của nút mặc định */
+}
+
+.task-list {                                       /* danh sách task */
+  list-style: none;                                /* bỏ dấu chấm tròn đầu dòng của thẻ <li> */
+  margin: 0;                                       /* xoá khoảng cách mặc định */
+  padding: 0;                                      /* xoá khoảng đệm mặc định */
+}
+
+.task-empty {                                      /* dòng thông báo khi chưa có task nào */
+  padding: 12px 0;                                 /* khoảng đệm trên dưới */
+  font-size: 14px;                                 /* chữ nhỏ */
+  color: #6b7280;                                  /* màu xám nhạt */
+}
+
+.task-item {                                       /* mỗi task là một mục trong danh sách */
+  padding: 10px 0;                                 /* khoảng đệm trên dưới */
+  border-bottom: 1px solid #f3f4f6;                /* đường kẻ mảnh phân cách các task */
+}
+
+.task-row {                                        /* hàng chính của một task */
+  display: flex;                                   /* xếp ngang: checkbox, nội dung, email, các nút */
+  align-items: center;                             /* căn giữa theo chiều dọc */
+  gap: 10px;                                       /* cách nhau 10px */
+}
+
+.task-checkbox {                                   /* ô tích đánh dấu hoàn thành */
+  width: 18px;                                     /* bề rộng ô tích */
+  height: 18px;                                    /* chiều cao ô tích */
+  cursor: pointer;                                 /* con trỏ dạng bàn tay khi rê vào */
+  flex-shrink: 0;                                  /* không bị co lại khi nội dung dài */
+}
+
+.task-content {                                    /* phần chữ nội dung task */
+  flex: 1;                                         /* chiếm hết phần rộng còn lại */
+  font-size: 15px;                                 /* cỡ chữ */
+  word-break: break-word;                          /* cho phép xuống dòng khi có từ quá dài */
+}
+
+.task-content.completed {                          /* task đã hoàn thành */
+  text-decoration: line-through;                   /* gạch ngang qua chữ để thấy rõ đã xong */
+  color: #9ca3af;                                  /* làm mờ chữ đi */
+}
+
+.task-assignee {                                   /* email người được gán, hiện trong ngoặc đơn */
+  font-size: 13px;                                 /* chữ nhỏ hơn nội dung task */
+  color: #4b5563;                                  /* màu xám đậm vừa phải */
+  white-space: nowrap;                             /* không cho xuống dòng, giữ email trên một hàng */
+}
+
+.task-actions {                                    /* nhóm nút chức năng bên phải task */
+  display: flex;                                   /* xếp các nút theo hàng ngang */
+  align-items: center;                             /* căn giữa theo chiều dọc */
+  gap: 6px;                                        /* cách nhau 6px */
+  flex-shrink: 0;                                  /* không bị co lại */
+}
+
+.icon-button {                                     /* nút nhỏ trong mỗi dòng task */
+  padding: 6px 10px;                               /* khoảng đệm nhỏ */
+  font-size: 13px;                                 /* chữ nhỏ */
+  background: #ffffff;                             /* nền trắng */
+  border: 1px solid #d1d5db;                       /* viền xám nhạt */
+  border-radius: 6px;                              /* bo góc nhỏ */
+  cursor: pointer;                                 /* con trỏ dạng bàn tay */
+}
+
+.icon-button:hover { background: #f3f4f6; }        /* rê chuột vào thì nền xám rất nhạt */
+.icon-button:disabled { opacity: 0.6; cursor: not-allowed; }  /* khi đang gửi thì nút mờ và không bấm được */
+
+.danger-button {                                   /* nút Delete */
+  color: #b91c1c;                                  /* chữ đỏ để cảnh báo hành động nguy hiểm */
+  border-color: #fecaca;                           /* viền đỏ nhạt */
+}
+
+.danger-button:hover { background: #fef2f2; }      /* rê chuột vào thì nền đỏ rất nhạt */
+
+.edit-input {                                      /* ô nhập khi đang sửa nội dung task */
+  flex: 1;                                         /* chiếm hết phần rộng còn lại */
+  padding: 6px 8px;                                /* khoảng đệm nhỏ */
+  font-size: 15px;                                 /* cỡ chữ bằng lúc xem bình thường */
+  border: 1px solid #2563eb;                       /* viền xanh để thấy rõ đang ở chế độ sửa */
+  border-radius: 6px;                              /* bo góc */
+}
+
+.assign-row {                                      /* hàng chọn người được gán */
+  display: flex;                                   /* xếp ngang: chữ nhắc, ô chọn, nút Cancel */
+  align-items: center;                             /* căn giữa theo chiều dọc */
+  gap: 8px;                                        /* cách nhau 8px */
+  margin: 8px 0 0 28px;                            /* thụt lề để thẳng hàng với nội dung task phía trên */
+}
+
+.assign-hint {                                     /* chữ nhắc "Assign to:" */
+  font-size: 13px;                                 /* chữ nhỏ */
+  color: #6b7280;                                  /* màu xám nhạt */
+}
+
+.assign-select {                                   /* ô chọn người */
+  padding: 6px 8px;                                /* khoảng đệm nhỏ */
+  font-size: 14px;                                 /* cỡ chữ */
+  border: 1px solid #d1d5db;                       /* viền xám nhạt */
+  border-radius: 6px;                              /* bo góc */
+  max-width: 240px;                                /* không cho ô chọn rộng quá */
+}
