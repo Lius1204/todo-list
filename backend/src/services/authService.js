@@ -22,6 +22,7 @@ import { generateVerificationToken, hashVerificationToken, safeCompareHex } from
 import { assertValidEmail, assertValidName, assertValidPassword, assertLoginPassword, normalizeEmail } from '../utils/validationUtils.js';   // Kiểm tra dữ liệu
 import { signAuthToken } from '../utils/jwtUtils.js';                                   // Ký JWT khi đăng nhập thành công
 import { isEmailConfigured, sendVerificationEmail } from './emailService.js';           // Dịch vụ gửi email
+import { isEmailSeeded } from './seedEmailService.js';                                  // (Bước 7) Tra nhanh 1 triệu email seed trên RAM
 
 // --- Các con số cấu hình nghiệp vụ ---
 export const VERIFICATION_TOKEN_TTL_MINUTES = 15;         // Token xác thực có hạn 15 phút (đúng yêu cầu đề)
@@ -78,10 +79,13 @@ export async function findUserByVerificationTokenHash(tokenHash) {
     return users.find((user) => user.verificationTokenHash && safeCompareHex(user.verificationTokenHash, tokenHash)) ?? null;
 }
 
-// Chặn email đã tồn tại (không phân biệt chữ hoa/thường)
+// Chặn email đã tồn tại: tra TRƯỚC trong 1 triệu email seed (RAM, O(1)) rồi mới đọc users.csv
 export async function assertEmailAvailable(email) {
-    // GHI CHÚ (Bước 7): hàm này sẽ được mở rộng để tra thêm file seed_users.csv (1 triệu email ảo)
-    const existingUser = await findUserByEmail(email);      // Tìm xem email đã có ai dùng chưa
+    if (await isEmailSeeded(email)) {                       // (Bước 7) Email nằm trong danh sách 1 triệu email ảo đã seed
+        throw new ApiError(409, 'This email address is already registered. Please log in instead.');   // Chặn ngay, không tốn CPU băm mật khẩu
+    }
+
+    const existingUser = await findUserByEmail(email);      // Tìm xem email đã có tài khoản thật nào dùng chưa
     if (!existingUser) return;                              // Chưa có -> hợp lệ
 
     if (existingUser.status === 'pending') {                // Đã đăng ký nhưng chưa xác thực email

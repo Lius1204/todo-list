@@ -23,6 +23,7 @@ import { readJsonBody } from './utils/httpUtils.js';                      // (3)
 import { sendSuccess, sendError, sendErrorFromException } from './utils/responseUtils.js';   // (2B) Quy ước JSON dùng chung
 import { handleAuthRoutes } from './routes/authRoutes.js';                // (3)  Nhóm API xác thực (signup, verify, resend)
 import { handleTaskRoutes } from './routes/taskRoutes.js';                // (5)  Nhóm API users + tasks (list, create, patch, delete)
+import { loadSeedEmails } from './services/seedEmailService.js';         // (7)  Nạp 1 triệu email seed vào RAM khi khởi động
 // ---------------------------------------------------------------------------
 // PHẦN 2: XÁC ĐỊNH ĐƯỜNG DẪN GỐC CỦA DỰ ÁN
 // ---------------------------------------------------------------------------
@@ -206,6 +207,19 @@ try {
 } catch (error) {
     console.error('[storage] LỖI khởi tạo file CSV:', error.message);      // In lỗi ngắn gọn, không in stack trace
     process.exit(1);                                                       // Dừng server vì không có nơi lưu dữ liệu
+}
+
+// --- (MỚI - Bước 7) Nạp danh sách 1 triệu email seed vào RAM để tra cứu O(1) khi đăng ký ---
+try {
+  const seedStats = await loadSeedEmails();                              // Đọc backend/db/seed_users.csv một lần duy nhất khi khởi động
+  if (seedStats.loaded) {                                                // File seed tồn tại -> đã nạp đủ
+    const sizeMb = (seedStats.fileSizeBytes / (1024 * 1024)).toFixed(1); // Kích thước file seed theo MB
+    console.log(`[seed] Đã nạp ${seedStats.totalEmails.toLocaleString('en-US')} email seed vào RAM trong ${seedStats.loadDurationMs} ms (file ${sizeMb} MB, RAM tăng ~${seedStats.heapDeltaMb} MB).`);
+  } else {
+    console.warn('[seed] Chưa có backend/db/seed_users.csv - hãy chạy: node backend/scripts/seedUsers.js rồi khởi động lại server.');
+  }
+} catch (error) {
+  console.warn('[seed] Không nạp được danh sách email seed:', error.message);   // Chỉ cảnh báo, server vẫn chạy bình thường
 }
 
 const server = http.createServer(requestHandler);                        // Tạo server từ hàm xử lý request
