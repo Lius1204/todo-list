@@ -1,0 +1,8 @@
+# Thư viện npm cài về: không đẩy lên GitHub
+node_modules/
+
+# File chứa mật khẩu Gmail: không bao giờ đẩy lên
+.env
+
+# Dữ liệu CSV (file seed 1 triệu dòng nặng ~44MB): không đẩy lên
+data/*.csv
