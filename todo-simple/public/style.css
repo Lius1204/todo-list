@@ -1,0 +1,178 @@
+/* style.css - file trang trí dùng chung cho cả trang đăng nhập và đăng ký.
+   Mục tiêu: khung trắng căn giữa màn hình, chữ dễ đọc, nút có khung rõ ràng. */
+
+* {
+    box-sizing: border-box;
+}
+
+/* tính cả viền và đệm vào kích thước phần tử, dễ canh chỉnh hơn */
+
+body {
+    /* áp dụng cho toàn trang */
+    margin: 0;
+    /* xoá khoảng trắng mặc định của trình duyệt */
+    min-height: 100vh;
+    /* chiều cao tối thiểu bằng chiều cao màn hình */
+    display: flex;
+    /* dùng flexbox để căn giữa nội dung */
+    align-items: center;
+    /* căn giữa theo chiều dọc */
+    justify-content: center;
+    /* căn giữa theo chiều ngang */
+    background: #f2f4f7;
+    /* màu nền xám rất nhẹ cho dễ nhìn */
+    font-family: Arial, Helvetica, sans-serif;
+    /* font chữ cơ bản, ai cũng có sẵn */
+    color: #1f2937;
+    /* màu chữ chính: xám đậm */
+}
+
+.card {
+    /* khung trắng chứa form */
+    width: 360px;
+    /* bề rộng cố định của khung */
+    padding: 32px;
+    /* khoảng cách từ viền khung vào nội dung */
+    background: #ffffff;
+    /* nền trắng nổi bật trên nền xám */
+    border: 1px solid #e5e7eb;
+    /* viền mảnh màu xám nhạt */
+    border-radius: 12px;
+    /* bo tròn 4 góc */
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    /* đổ bóng nhẹ tạo cảm giác nổi lên */
+    text-align: center;
+    /* căn giữa chữ bên trong khung */
+}
+
+.title {
+    /* tiêu đề "Todo list" */
+    margin: 0 0 16px;
+    /* cách phía dưới 16px */
+    font-size: 28px;
+    /* chữ lớn hơn phần còn lại */
+}
+
+.message {
+    /* chỗ hiện thông báo chung */
+    min-height: 20px;
+    /* giữ sẵn chiều cao để bố cục không bị nhảy khi có thông báo */
+    margin: 0 0 12px;
+    /* cách phía dưới 12px */
+    font-size: 14px;
+    /* chữ nhỏ hơn tiêu đề */
+    color: #b91c1c;
+    /* màu đỏ: mặc định coi là thông báo lỗi */
+}
+
+.message.success {
+    color: #15803d;
+}
+
+/* thông báo thành công thì đổi sang màu xanh */
+
+form {
+    /* khối form chứa các ô nhập */
+    display: flex;
+    /* dùng flexbox để xếp các ô theo hàng dọc */
+    flex-direction: column;
+    /* hướng xếp: từ trên xuống dưới */
+    text-align: left;
+    /* nội dung form căn trái cho dễ đọc */
+}
+
+.label {
+    /* nhãn của từng ô nhập */
+    margin-bottom: 6px;
+    /* cách ô nhập bên dưới 6px */
+    font-size: 14px;
+    /* cỡ chữ nhãn */
+    font-weight: 600;
+    /* in đậm vừa phải để nổi bật */
+}
+
+.input {
+    /* ô nhập liệu */
+    padding: 10px 12px;
+    /* khoảng đệm bên trong ô */
+    font-size: 15px;
+    /* cỡ chữ khi người dùng gõ */
+    border: 1px solid #d1d5db;
+    /* viền xám nhạt */
+    border-radius: 8px;
+    /* bo tròn góc ô nhập */
+}
+
+.input:focus {
+    /* khi ô nhập đang được chọn */
+    outline: 2px solid #2563eb;
+    /* viền xanh nổi bật để biết đang gõ ở ô nào */
+    outline-offset: 1px;
+    /* khoảng cách giữa ô nhập và viền nổi bật */
+}
+
+.field-error {
+    /* chỗ hiện lỗi riêng dưới mỗi ô nhập */
+    min-height: 18px;
+    /* giữ sẵn chiều cao để bố cục không bị nhảy */
+    margin: 4px 0 8px;
+    /* khoảng cách trên và dưới */
+    font-size: 13px;
+    /* chữ nhỏ để không lấn át nội dung chính */
+    color: #b91c1c;
+    /* màu đỏ: báo có lỗi */
+}
+
+.button {
+    /* nút chính: CÓ KHUNG như trong ảnh giảng viên */
+    margin-top: 8px;
+    /* cách ô nhập phía trên 8px */
+    padding: 11px 16px;
+    /* khoảng đệm bên trong nút */
+    font-size: 15px;
+    /* cỡ chữ trên nút */
+    font-weight: 600;
+    /* chữ đậm cho dễ thấy */
+    color: #ffffff;
+    /* chữ trắng */
+    background: #2563eb;
+    /* nền xanh dương */
+    border: 1px solid #2563eb;
+    /* viền cùng màu nền tạo thành khung */
+    border-radius: 8px;
+    /* bo tròn góc nút */
+    cursor: pointer;
+    /* đổi con trỏ thành bàn tay khi rê chuột vào */
+}
+
+.button:hover {
+    background: #1d4ed8;
+}
+
+/* rê chuột vào thì nền đậm hơn chút */
+.button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* khi đang gửi: nút mờ và không bấm được */
+
+.link {
+    /* link phụ: KHÔNG KHUNG như trong ảnh giảng viên */
+    display: inline-block;
+    /* cho phép đặt khoảng cách phía trên */
+    margin-top: 14px;
+    /* cách nút phía trên 14px */
+    font-size: 14px;
+    /* cỡ chữ nhỏ hơn nút */
+    color: #2563eb;
+    /* màu xanh giống nút cho hài hoà */
+    text-decoration: none;
+    /* bỏ gạch chân mặc định của thẻ <a> */
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+/* rê chuột vào thì hiện gạch chân để biết bấm được */

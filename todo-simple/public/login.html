@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"> <!-- UTF-8 để hiện đúng tiếng Việt -->
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- hiển thị đúng trên điện thoại -->
+    <title>Todo list - Login</title> <!-- tiêu đề trên tab trình duyệt -->
+    <link rel="stylesheet" href="/style.css"> <!-- nạp file trang trí dùng chung -->
+</head>
+
+<body>
+    <main class="card"> <!-- khung trắng căn giữa màn hình -->
+        <h1 class="title">Todo list</h1> <!-- tiêu đề đúng như trong đề bài -->
+
+        <!-- Chỗ hiện thông báo chung (thành công hoặc lỗi), nằm ngay dưới tiêu đề -->
+        <p id="message" class="message"></p>
+
+        <!-- novalidate: tắt kiểm tra tự động của trình duyệt để mình tự hiện lỗi cho đẹp -->
+        <form id="login-form" novalidate>
+
+            <label class="label" for="email">Email</label> <!-- nhãn của ô email -->
+            <input id="email" class="input" type="email" <!-- ô nhập email, tự gợi ý bàn phím email -->
+            placeholder="you@example.com" autocomplete="email">
+            <p id="email-error" class="field-error"></p> <!-- chỗ hiện lỗi riêng của ô email -->
+
+            <label class="label" for="password">Password</label> <!-- nhãn của ô mật khẩu -->
+            <input id="password" class="input" type="password" <!-- type=password để che ký tự khi gõ -->
+            placeholder="Your password" autocomplete="current-password">
+            <p id="password-error" class="field-error"></p> <!-- chỗ hiện lỗi riêng của ô mật khẩu -->
+
+            <!-- Nút chính CÓ KHUNG (class button), chữ đúng là "Login" như trong ảnh -->
+            <button id="login-button" class="button" type="submit">Login</button>
+        </form>
+
+        <!-- Link phụ KHÔNG KHUNG (class link), nằm dưới nút Login, bấm vào là sang trang đăng ký -->
+        <a class="link" href="/signup.html">Sign Up</a>
+    </main>
+
+    <script src="/login.js"></script> <!-- nạp script; đặt cuối body nên HTML đã sẵn sàng -->
+</body>
+
+</html>
