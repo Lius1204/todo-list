@@ -22,7 +22,7 @@ import { ensureAllCsvFiles } from './utils/csvUtils.js';                  // (2A
 import { readJsonBody } from './utils/httpUtils.js';                      // (3)  Đọc và parse JSON body an toàn, có giới hạn dung lượng
 import { sendSuccess, sendError, sendErrorFromException } from './utils/responseUtils.js';   // (2B) Quy ước JSON dùng chung
 import { handleAuthRoutes } from './routes/authRoutes.js';                // (3)  Nhóm API xác thực (signup, verify, resend)
-
+import { handleTaskRoutes } from './routes/taskRoutes.js';                // (5)  Nhóm API users + tasks (list, create, patch, delete)
 // ---------------------------------------------------------------------------
 // PHẦN 2: XÁC ĐỊNH ĐƯỜNG DẪN GỐC CỦA DỰ ÁN
 // ---------------------------------------------------------------------------
@@ -156,6 +156,9 @@ async function handleApiRequest(ctx) {
 
     // Nhóm route xác thực (Bước 3): signup, verify-email, resend-verification
     if (await handleAuthRoutes(ctx)) return;                               // Đã xử lý xong -> kết thúc
+
+    // Nhóm route công việc (Bước 5): /api/users và /api/tasks
+    if (await handleTaskRoutes(ctx)) return;                               // Đã xử lý xong -> kết thúc
 
     // Các nhóm route khác (users, tasks) sẽ được thêm ở Bước 5
     sendError(res, 404, `API endpoint not found: ${req.method} ${pathname}`);   // Không khớp endpoint nào
